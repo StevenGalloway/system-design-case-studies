@@ -1,0 +1,34 @@
+flowchart TD
+    subgraph Brokers["Kafka Cluster (3 AZs)"]
+        B1[Broker AZ-1]
+        B2[Broker AZ-2]
+        B3[Broker AZ-3]
+    end
+
+    subgraph Topics
+        T1[playback-events]
+        T2[qoe-telemetry]
+        T3[content-events]
+        T4[user-actions]
+    end
+
+    subgraph ConsumerGroups["Consumer Groups"]
+        CG1[Flink: Real-Time Features]
+        CG2[Flink: Anomaly Detection]
+        CG3[Spark: Batch Ingestion]
+        CG4[Alerting Engine]
+    end
+
+    B1 --- B2
+    B2 --- B3
+    B1 --- B3
+
+    T1 --> B1
+    T2 --> B2
+    T3 --> B3
+    T4 --> B1
+
+    B1 --> CG1
+    B2 --> CG2
+    B3 --> CG3
+    B1 --> CG4
