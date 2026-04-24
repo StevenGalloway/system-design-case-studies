@@ -1,0 +1,42 @@
+flowchart LR
+    subgraph Ingest
+        Mezz[Mezzanine File]
+        Validate[Integrity Validation]
+    end
+
+    subgraph Optimization
+        Analyze[Scene Complexity Analysis]
+        Ladder[Bitrate Ladder Generator]
+    end
+
+    subgraph Encoding
+        H264[H.264 Encoder]
+        H265[H.265 Encoder]
+        AV1[AV1 Encoder]
+    end
+
+    subgraph QualityControl["Quality Control"]
+        VMAF[VMAF Scorer]
+        Gate{Quality Gate}
+    end
+
+    subgraph Output
+        Package[CMAF Packager]
+        DRMEnc[DRM Encryption]
+        Artifacts[Content Artifact Store]
+    end
+
+    Mezz --> Validate
+    Validate --> Analyze
+    Analyze --> Ladder
+    Ladder --> H264
+    Ladder --> H265
+    Ladder --> AV1
+    H264 --> VMAF
+    H265 --> VMAF
+    AV1 --> VMAF
+    VMAF --> Gate
+    Gate -->|Pass| Package
+    Gate -->|Fail| Rejected[Rejected - Alert]
+    Package --> DRMEnc
+    DRMEnc --> Artifacts
