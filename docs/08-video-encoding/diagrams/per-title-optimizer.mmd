@@ -1,0 +1,30 @@
+flowchart TD
+    Mezz[Mezzanine File]
+
+    subgraph Analysis["Scene Complexity Analysis"]
+        Spatial[Spatial Complexity Score]
+        Temporal[Temporal Complexity Score]
+        Scene[Scene Segmentation]
+    end
+
+    subgraph Modeling["Bitrate Prediction Model"]
+        Curve[Quality-Bitrate Curve Prediction]
+        Ladder[Custom Bitrate Ladder]
+    end
+
+    subgraph Validation["Ladder Validation"]
+        Bounds{Within Bounds?}
+        Default[Default Ladder Fallback]
+    end
+
+    Mezz --> Scene
+    Scene --> Spatial
+    Scene --> Temporal
+    Spatial --> Curve
+    Temporal --> Curve
+    Curve --> Ladder
+    Ladder --> Bounds
+    Bounds -->|Yes| Approved[Approved Ladder]
+    Bounds -->|No| Default
+    Default --> Approved
+    Approved --> Workers[Encoding Workers]
