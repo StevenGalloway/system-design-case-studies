@@ -1,0 +1,24 @@
+sequenceDiagram
+    participant User
+    participant DownloadMgr as Download Manager
+    participant Auth as Auth Service
+    participant DRM as DRM License Service
+    participant CDN
+    participant Storage as Secure Local Storage
+
+    User->>DownloadMgr: Request Download (title_id)
+    DownloadMgr->>Auth: Validate Entitlement
+    Auth-->>DownloadMgr: Entitlement OK
+    DownloadMgr->>DRM: Request Offline License
+    DRM-->>DownloadMgr: Offline License (device-bound)
+    DownloadMgr->>Storage: Store License in Secure Storage
+    DownloadMgr->>CDN: Fetch Encrypted Segments
+    CDN-->>DownloadMgr: Encrypted Segments
+    DownloadMgr->>Storage: Write Encrypted Content
+    DownloadMgr-->>User: Download Complete
+
+    Note over User,Storage: Offline Playback (no network required)
+    User->>DownloadMgr: Play Offline Title
+    DownloadMgr->>Storage: Load License + Content
+    Storage-->>DownloadMgr: Decryption Keys + Segments
+    DownloadMgr-->>User: Secure Playback Begins
