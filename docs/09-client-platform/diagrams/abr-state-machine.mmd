@@ -1,0 +1,23 @@
+stateDiagram-v2
+    [*] --> Startup
+
+    Startup --> Buffering : First segment requested
+    Buffering --> Playing : Buffer >= startup threshold
+    Buffering --> Error : Download failure
+
+    Playing --> QualityUp : Buffer > target AND throughput headroom
+    Playing --> QualityDown : Buffer < minimum threshold
+    Playing --> Rebuffering : Buffer exhausted
+    Playing --> Paused : User pause
+    Playing --> [*] : Playback complete
+
+    QualityUp --> Playing : Segment downloaded at higher bitrate
+    QualityDown --> Playing : Segment downloaded at lower bitrate
+
+    Rebuffering --> Playing : Buffer refilled to minimum
+    Rebuffering --> Error : Download failure sustained
+
+    Paused --> Playing : User resume
+
+    Error --> [*] : Unrecoverable
+    Error --> Startup : Retry
