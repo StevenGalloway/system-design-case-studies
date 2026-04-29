@@ -1,0 +1,38 @@
+flowchart LR
+    subgraph Compute["Feature Computation"]
+        Flink[Flink Stream Jobs]
+        Spark[Spark Batch Jobs]
+    end
+
+    subgraph Catalog["Feature Catalog"]
+        Schema[Schema Registry]
+        Owner[Ownership + SLA]
+        Lineage[Lineage Graph]
+    end
+
+    subgraph Offline["Offline Feature Store"]
+        Iceberg[Iceberg Tables]
+        PITR[Point-in-Time Join Engine]
+    end
+
+    subgraph Online["Online Feature Store"]
+        KV[Low-Latency KV Store]
+        Cache[In-Memory Cache]
+    end
+
+    subgraph Consumers
+        Train[Training Jobs]
+        Infer[Inference Fleet]
+    end
+
+    Flink --> Iceberg
+    Spark --> Iceberg
+    Iceberg --> KV
+    KV --> Cache
+    Iceberg --> PITR
+    PITR --> Train
+    Cache --> Infer
+    Schema --> Flink
+    Schema --> Spark
+    Lineage --> Catalog
+    Owner --> Catalog
