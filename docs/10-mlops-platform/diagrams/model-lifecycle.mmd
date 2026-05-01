@@ -1,0 +1,40 @@
+flowchart TD
+    subgraph Features["Feature Engineering"]
+        FS_Off[Offline Feature Store]
+        FS_On[Online Feature Store]
+    end
+
+    subgraph Training
+        Exp[Experiment Tracker]
+        Train[Training Pipeline]
+        Eval[Offline Evaluation]
+    end
+
+    subgraph Registry
+        MR[Model Registry]
+        Sign[Artifact Signing]
+    end
+
+    subgraph Validation
+        Shadow[Shadow Deployment]
+        Canary[Canary Rollout]
+    end
+
+    subgraph Production
+        Infer[Inference Fleet]
+        Monitor[Model Monitor]
+    end
+
+    FS_Off --> Train
+    Train --> Exp
+    Train --> Eval
+    Eval -->|Pass| Sign
+    Sign --> MR
+    MR --> Shadow
+    Shadow -->|Metrics OK| Canary
+    Shadow -->|Metrics Fail| MR
+    Canary -->|Stable| Infer
+    Canary -->|Regression| MR
+    FS_On --> Infer
+    Infer --> Monitor
+    Monitor -->|Drift Detected| MR
